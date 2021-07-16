@@ -13,7 +13,7 @@ ipak <- function(pkg){
   sapply(pkg, require, character.only = TRUE)
 }
 
-packages <- c("tidyverse", "XQuartz", "tidygraph", "rtweet", "ggraph", "tidytext", "stopwords", "sentimentr", "lubridate", "textfeatures", "wordcloud", "RColorBrewer", "academicTwitterR", "dotwhisker")
+packages <- c("tidyverse", "XQuartz", "tidygraph", "rtweet", "ggraph", "tidytext", "stopwords", "sentimentr", "lubridate", "textfeatures", "wordcloud", "RColorBrewer", "academicTwitterR", "dotwhisker", "jtools")
 ipak(packages)
 packages <- c("rtweet", "plyr")
 ipak(packages)
@@ -27,6 +27,7 @@ library(academictwitterR)
 #Apply for twitter API account: https://developer.twitter.com/en/apply-for-access 
 
 #Create Twitter Token With Regular Account
+#Enter your credentials from the Twitter API below 
 
 create_token(
   app = "",
@@ -42,13 +43,14 @@ set_bearer()
 
 #### Getting Profile #### 
 
-steverathje2 <- get_timeline("steverathje2", n = 3200)
+steverathje2 <- get_timeline("steverathje2", n = 200)
 
 DailyCaller <- get_timeline("DailyCaller", n = 3200)
 MailOnline <- get_timeline("MailOnline", n = 3200)
 FoxNews <- get_timeline("FoxNews", n = 3200)
 nypost <- get_timeline("nypost", n = 3200)
 BrietbartNews <- get_timeline("BreitbartNews", 3200)
+
 dataset <- rbind(DailyCaller, MailOnline, FoxNews, nypost, BrietbartNews)
 
 saveRDS(dataset, "dataset.rds")
@@ -57,6 +59,8 @@ saveRDS(dataset, "dataset.rds")
 dataset <- readRDS("dataset.rds")
 
 #### Get Recent Tweets ####
+
+tweets <- search_tweets("steve OR bob", n = 100, include_rts = FALSE, geocode = lookup_coords("usa"))
 
 #right-leaning low quality news sites 
 infowars <- search_tweets("infowars.com*", n = 3200)
@@ -133,10 +137,6 @@ dictionary = dictionary(list(MoralEmotional = MoralEmotional,
                              Democrat = TopDemocrat, 
                              Democrat = DemocratCongress, 
                              Democrat = liberalidentity))
-
-# delete duplicates
-dataset <- datasetRepub
-dataset <- dataset[!duplicated(dataset$user_id), ]
 
 #quanteda steps 
 dataset_corpus <- corpus(dataset)
